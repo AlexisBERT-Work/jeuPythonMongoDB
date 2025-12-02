@@ -6,7 +6,7 @@ PERSONNAGES_COLLECTION = "personnages"
 MONSTRES_COLLECTION = "monstres"
 
 
-def create_db_and_collections():
+def creation_db_et_collections():
     """Crée la BDD et les deux collections."""
     client = MongoClient(MONGO_URI)
     db = client[DB_NAME]
@@ -25,5 +25,20 @@ def create_db_and_collections():
 
     client.close()
 
+def ajout_personnages():
+    """Insère les personnages."""
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    db[PERSONNAGES_COLLECTION].delete_many({})
+    personnages = [
+        {"Classe": "Guerrier", "Attaque": 10, "Défense": 5, "PV": 150, "Mana": 30},
+        {"Classe": "Archer", "Attaque": 13, "Défense": 3, "PV": 100, "Mana": 50},
+        {"Classe": "Mage", "Attaque": 15, "Défense": 2, "PV": 80, "Mana": 100},
+    ]
+    db[PERSONNAGES_COLLECTION].insert_many(personnages)
+    client.close()
+
+
 if __name__ == "__main__":
-    create_db_and_collections()
+    creation_db_et_collections()
+    ajout_personnages()
