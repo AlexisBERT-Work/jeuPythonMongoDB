@@ -38,7 +38,21 @@ def ajout_personnages():
     db[PERSONNAGES_COLLECTION].insert_many(personnages)
     client.close()
 
+def ajout_monstres():
+    """Insère les monstres."""
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    db[MONSTRES_COLLECTION].delete_many({})
+    monstres = [
+        {"Nom": "Gobelin", "Attaque": 8, "Défense": 2, "PV": 50},
+        {"Nom": "Orc", "Attaque": 12, "Défense": 4, "PV": 80},
+        {"Nom": "Dragon", "Attaque": 20, "Défense": 10, "PV": 300},
+    ]
+    db[MONSTRES_COLLECTION].insert_many(monstres)
+    client.close()
+
 
 if __name__ == "__main__":
     creation_db_et_collections()
     ajout_personnages()
+    ajout_monstres()
