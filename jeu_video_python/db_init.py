@@ -58,73 +58,78 @@ def ajout_factions(db):
     db[FACTIONS_COLLECTION].insert_many(factions)
     print("Factions insérées.")
 
+def donnees_monstres():
+    """Dictionnaire contenant les données des monstres."""
+    return {
+        "Chaos": [
+            {"Nom": "Bloodletter", "Rôle": "Démon Infanterie", 
+             "Statistiques": {"Attaque": 18, "Défense": 8, "Vie": 70}},
+            {"Nom": "Plaguebearer", "Rôle": "Démon Infanterie", 
+             "Statistiques": {"Attaque": 10, "Défense": 15, "Vie": 100}},
+            {"Nom": "Daemonette", "Rôle": "Démon Infanterie", 
+             "Statistiques": {"Attaque": 20, "Défense": 5, "Vie": 60}},
+            {"Nom": "Chaos Space Marine", "Rôle": "Élite", 
+             "Statistiques": {"Attaque": 15, "Défense": 12, "Vie": 150}},
+        ],
+        "Nécron": [
+            {"Nom": "Guerrier Nécron", "Rôle": "Base", 
+             "Statistiques": {"Attaque": 10, "Défense": 10, "Vie": 80}},
+            {"Nom": "Immortel Nécron", "Rôle": "Infanterie Lourde", 
+             "Statistiques": {"Attaque": 14, "Défense": 14, "Vie": 120}},
+            {"Nom": "Destroyer", "Rôle": "Soutien Lourd", 
+             "Statistiques": {"Attaque": 25, "Défense": 12, "Vie": 180}},
+            {"Nom": "Spectre", "Rôle": "Assaut Rapide", 
+             "Statistiques": {"Attaque": 18, "Défense": 8, "Vie": 100}},
+        ],
+        "Orcs": [
+            {"Nom": "Boy Ork", "Rôle": "Base", 
+             "Statistiques": {"Attaque": 12, "Défense": 8, "Vie": 90}},
+            {"Nom": "Nob Ork", "Rôle": "Élite", 
+             "Statistiques": {"Attaque": 16, "Défense": 12, "Vie": 130}},
+            {"Nom": "Gretchin", "Rôle": "Troupaille", 
+             "Statistiques": {"Attaque": 5, "Défense": 3, "Vie": 30}},
+            {"Nom": "Killa Kan", "Rôle": "Véhicule Léger", 
+             "Statistiques": {"Attaque": 20, "Défense": 15, "Vie": 200}},
+        ],
+        "Eldars": [
+            {"Nom": "Gardien Eldar", "Rôle": "Base", 
+             "Statistiques": {"Attaque": 12, "Défense": 6, "Vie": 70}},
+            {"Nom": "Ranger", "Rôle": "Furtif", 
+             "Statistiques": {"Attaque": 15, "Défense": 5, "Vie": 65}},
+            {"Nom": "Vengeur Lugubre", "Rôle": "Élite", 
+             "Statistiques": {"Attaque": 18, "Défense": 8, "Vie": 80}},
+            {"Nom": "Seigneur Fantôme", "Rôle": "Monstrueux", 
+             "Statistiques": {"Attaque": 30, "Défense": 20, "Vie": 400}},
+        ],
+        "Tyranides": [
+            {"Nom": "Hormagaunt", "Rôle": "Essaim", 
+             "Statistiques": {"Attaque": 10, "Défense": 4, "Vie": 50}},
+            {"Nom": "Termagant", "Rôle": "Essaim (Tir)", 
+             "Statistiques": {"Attaque": 8, "Défense": 5, "Vie": 50}},
+            {"Nom": "Guerrier Tyranide", "Rôle": "Synapse", 
+             "Statistiques": {"Attaque": 17, "Défense": 13, "Vie": 160}},
+            {"Nom": "Carnifex", "Rôle": "Monstrueux", 
+             "Statistiques": {"Attaque": 35, "Défense": 18, "Vie": 500}},
+        ]
+    }
+
 
 def ajout_monstres(db):
     """Ajoute les monstres et unités pour les factions."""
     db[MONSTRES_COLLECTION].delete_many({})
+
     factions_ids = {f["Nom"]: f["_id"] 
                     for f in db[FACTIONS_COLLECTION].find({}, {"Nom": 1})}
+    
     monstres_a_ajouter = []
-    chaos_id = factions_ids.get("Chaos")
-    if chaos_id:
-        monstres_a_ajouter.extend([
-            {"Nom": "Bloodletter", "IdFaction": chaos_id, "Rôle": "Démon Infanterie", 
-             "Statistiques": {"Attaque": 18, "Défense": 8, "Vie": 70}},
-            {"Nom": "Plaguebearer", "IdFaction": chaos_id, "Rôle": "Démon Infanterie", 
-             "Statistiques": {"Attaque": 10, "Défense": 15, "Vie": 100}},
-            {"Nom": "Daemonette", "IdFaction": chaos_id, "Rôle": "Démon Infanterie", 
-             "Statistiques": {"Attaque": 20, "Défense": 5, "Vie": 60}},
-            {"Nom": "Chaos Space Marine", "IdFaction": chaos_id, "Rôle": "Élite", 
-             "Statistiques": {"Attaque": 15, "Défense": 12, "Vie": 150}},
-        ])
-    necron_id = factions_ids.get("Nécron")
-    if necron_id:
-        monstres_a_ajouter.extend([
-            {"Nom": "Guerrier Nécron", "IdFaction": necron_id, "Rôle": "Base", 
-             "Statistiques": {"Attaque": 10, "Défense": 10, "Vie": 80}},
-            {"Nom": "Immortel Nécron", "IdFaction": necron_id, "Rôle": "Infanterie Lourde", 
-             "Statistiques": {"Attaque": 14, "Défense": 14, "Vie": 120}},
-            {"Nom": "Destroyer", "IdFaction": necron_id, "Rôle": "Soutien Lourd", 
-             "Statistiques": {"Attaque": 25, "Défense": 12, "Vie": 180}},
-            {"Nom": "Spectre", "IdFaction": necron_id, "Rôle": "Assaut Rapide", 
-             "Statistiques": {"Attaque": 18, "Défense": 8, "Vie": 100}},
-        ])
-    orcs_id = factions_ids.get("Orcs")
-    if orcs_id:
-        monstres_a_ajouter.extend([
-            {"Nom": "Boy Ork", "IdFaction": orcs_id, "Rôle": "Base", 
-             "Statistiques": {"Attaque": 12, "Défense": 8, "Vie": 90}},
-            {"Nom": "Nob Ork", "IdFaction": orcs_id, "Rôle": "Élite", 
-             "Statistiques": {"Attaque": 16, "Défense": 12, "Vie": 130}},
-            {"Nom": "Gretchin", "IdFaction": orcs_id, "Rôle": "Troupaille", 
-             "Statistiques": {"Attaque": 5, "Défense": 3, "Vie": 30}},
-            {"Nom": "Killa Kan", "IdFaction": orcs_id, "Rôle": "Véhicule Léger", 
-             "Statistiques": {"Attaque": 20, "Défense": 15, "Vie": 200}},
-        ])
-    eldars_id = factions_ids.get("Eldars")
-    if eldars_id:
-        monstres_a_ajouter.extend([
-            {"Nom": "Gardien Eldar", "IdFaction": eldars_id, "Rôle": "Base", 
-             "Statistiques": {"Attaque": 12, "Défense": 6, "Vie": 70}},
-            {"Nom": "Ranger", "IdFaction": eldars_id, "Rôle": "Furtif", 
-             "Statistiques": {"Attaque": 15, "Défense": 5, "Vie": 65}},
-            {"Nom": "Vengeur Lugubre", "IdFaction": eldars_id, "Rôle": "Élite", 
-             "Statistiques": {"Attaque": 18, "Défense": 8, "Vie": 80}},
-            {"Nom": "Seigneur Fantôme", "IdFaction": eldars_id, "Rôle": "Monstrueux", 
-             "Statistiques": {"Attaque": 30, "Défense": 20, "Vie": 400}},
-        ])
-    tyranides_id = factions_ids.get("Tyranides")
-    if tyranides_id:
-        monstres_a_ajouter.extend([
-            {"Nom": "Hormagaunt", "IdFaction": tyranides_id, "Rôle": "Essaim", 
-             "Statistiques": {"Attaque": 10, "Défense": 4, "Vie": 50}},
-            {"Nom": "Termagant", "IdFaction": tyranides_id, "Rôle": "Essaim (Tir)", 
-             "Statistiques": {"Attaque": 8, "Défense": 5, "Vie": 50}},
-            {"Nom": "Guerrier Tyranide", "IdFaction": tyranides_id, "Rôle": "Synapse", 
-             "Statistiques": {"Attaque": 17, "Défense": 13, "Vie": 160}},
-            {"Nom": "Carnifex", "IdFaction": tyranides_id, "Rôle": "Monstrueux", 
-             "Statistiques": {"Attaque": 35, "Défense": 18, "Vie": 500}},
-        ])
+    donnees_par_faction = donnees_monstres() 
+
+    for nom_faction, liste_monstres in donnees_par_faction.items():
+        id_faction = factions_ids.get(nom_faction)
+        if id_faction:
+            for monstre in liste_monstres:
+                monstre["IdFaction"] = id_faction
+                monstres_a_ajouter.append(monstre)
 
     if monstres_a_ajouter:
         db[MONSTRES_COLLECTION].insert_many(monstres_a_ajouter)
