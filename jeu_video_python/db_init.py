@@ -25,7 +25,7 @@ def ajout_chapitres(db):
     db[CHAPITRE_SELECTION].delete_many({})
     chapitres = [
         {"IdFaction": space_marines_id, "Nom": "Ultra Marines", "Description": "Les Ultra Marines sont une légion de Space Marines réputée pour leur discipline et leur tactique.", "Spécialité": "Tactique", "Effectif": 10,
-          "Statistiques": { "Attaque": 12, "Défense": 10, "Vie": 150 }
+          "Statistiques": { "Attaque": 22, "Défense": 10, "Vie": 150 }
         },
         {"IdFaction": space_marines_id, "Nom": "Blood Angels", "Description": "Les Blood Angels sont connus pour leur bravoure et leur soif de combat, mais aussi pour leur malédiction génétique.", "Spécialité": "Assaut", "Effectif": 10,
          "Statistiques": { "Attaque": 18, "Défense": 9, "Vie": 130 }

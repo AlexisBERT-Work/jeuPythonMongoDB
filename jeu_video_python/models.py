@@ -37,6 +37,22 @@ class Personnage(Combattant):
         base_str = super().__str__()
         return f"{base_str} - Spécialité: {self.specialite}"
     
+#    def __add__(self, other):
+#        if isinstance(other, Personnage):
+#            return Personnage({
+#                "Nom": f"{self.nom} + {other.nom}",
+#                "Statistiques": {
+#                    "Attaque": self.attaque + other.attaque,
+#                    "Défense": self.defense + other.defense,
+#                    "Vie": self.vie_max + other.vie_max
+#                }
+#            })
+#        return super().__add__(other)
+
+#team = [3 perso]
+
+#def fusion :
+#    new_perso = personage[0] + personnage[1]
 
 class Monstre(Combattant):
 
