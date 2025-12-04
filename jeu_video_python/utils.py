@@ -64,43 +64,43 @@ def lire_choix_valide(max_choix: int, prompt: str) -> int:
         if 1 <= choix_index_humain <= max_choix:
             return choix_index_humain
         else:
-            print(f"Veuillez entrer un numéro entre 1 et {max_choix}.")
+            print(f"Veuillez entrer un numéro entre 1 et {max_choix}.") 
 
-def selectionner_personnage(disponibles: list, index_humain: int) -> Personnage:
-    """Retire et retourne le personnage de la liste des disponibles en utilisant l'index"""
-    index_python = index_humain - 1
-    perso = disponibles.pop(index_python) 
-    
-    return perso
+
+def demander_choix_personnage(disponibles: List[Personnage], equipe: List[Personnage], taille_equipe: int) -> int:
+    """Affiche la liste, construit le prompt et retourne l'index (1-based) choisi par l'utilisateur."""
+    afficher_personnages(disponibles)
+    max_choix = len(disponibles)
+    prompt = f"Choix {len(equipe) + 1}/{taille_equipe} (1-{max_choix}) : "
+    return lire_choix_valide(max_choix, prompt)
+
+
+def selectionner_personnage(disponibles: List[Personnage], choix_1_based: int) -> Personnage:
+    """Retire et renvoie le personnage choisi via pop()."""
+    return disponibles.pop(choix_1_based - 1)
+
 
 def choisir_equipe(db, taille_equipe: int = 3, collection_name: str = CHAPITRES_COLLECTION) -> List[Personnage]:
-    personnages = recup_personnages(db, collection_name)
-    if not personnages:
+    disponibles = recup_personnages(db, collection_name)
+
+    if not disponibles:
         print("Impossible de créer une équipe.")
         return []
 
-    selection = []
-    disponibles = personnages.copy()
-
+    equipe = []
     print("Sélectionnez vos personnages :")
-    while len(selection) < taille_equipe:
-        afficher_personnages(disponibles)
-        
-        max_choix = len(disponibles)
-        prompt = f"Choix {len(selection)+1}/{taille_equipe} (1-{max_choix}) : "
-        choix_index_humain = lire_choix_valide(max_choix, prompt)
-    
-        perso = selectionner_personnage(disponibles, choix_index_humain)
-        
-        
-        selection.append(perso)
-        # pop les persos 
 
+    while len(equipe) < taille_equipe:
+        choix = demander_choix_personnage(disponibles, equipe, taille_equipe)
+        perso = selectionner_personnage(disponibles, choix)
+
+        equipe.append(perso)
         print(f"-> {perso.nom} ajouté à l'équipe.\n")
 
     print("Équipe constituée :")
-    afficher_personnages(selection)
-    return selection
+    afficher_personnages(equipe)
+
+    return equipe
 
 def equipe_est_vivante(equipe: List[Personnage]) -> bool:
     return any(p.est_vivant() for p in equipe)
@@ -115,22 +115,39 @@ def clone_equipe_from_docs(team_docs: List[dict]) -> List[Personnage]:
     return [Personnage(doc) for doc in team_docs]
 
 
-def realiser_vague(equipe: List[Personnage], monstre: Monstre) -> Tuple[bool, Monstre]:
+def attaque_personnage_sur_monstre(personnage: Personnage, monstre: Monstre) -> int:
+    degats = personnage.attaquer(monstre)
+    print(f"{personnage.nom} attaque {monstre.nom} et inflige {degats} dégâts. "
+          f"Il lui reste {monstre.vie_actuelle} PV.")
+    return degats
 
-    for p in equipe:
-        if not p.est_vivant():
+
+def attaque_monstre_sur_equipe(monstre: Monstre, equipe: List[Personnage]) -> Optional[int]:
+    cibles_vivantes = [p for p in equipe if p.est_vivant()]
+    if not cibles_vivantes:
+        return None
+
+    cible = random.choice(cibles_vivantes)
+    degats = monstre.attaquer(cible)
+    print("============================")
+    print(f"{monstre.nom} attaque {cible.nom} et inflige {degats} dégâts !, il lui reste {cible.vie_actuelle} PV.")
+    return degats
+
+
+def realiser_vague(equipe: List[Personnage], monstre: Monstre) -> Tuple[bool, Monstre]:
+    """Gère une vague de combat : l'équipe attaque, puis le monstre riposte."""
+
+    for personnage in equipe:
+        if not personnage.est_vivant():
             continue
-        degats = p.attaquer(monstre)
-        print(f"{p.nom} attaque {monstre.nom} et inflige {degats} dégâts. ({monstre.vie_actuelle}/{monstre.vie_max} PV)")
-        
+
+        attaque_personnage_sur_monstre(personnage, monstre)
+
         if not monstre.est_vivant():
-            print(f"{monstre.nom} est vaincu !")
-            return True, monstre 
+            print(f"*** {monstre.nom} est vaincu ! ***")
+            return True, monstre
 
     if monstre.est_vivant():
-        cibles_vivantes = [p for p in equipe if p.est_vivant()]
-        if cibles_vivantes:
-            cible = random.choice(cibles_vivantes)
-            degats_monstre = monstre.attaquer(cible)
-            print(f"{monstre.nom} attaque {cible.nom} et inflige {degats_monstre} dégâts. ({cible.vie_actuelle}/{cible.vie_max} PV)")
+        attaque_monstre_sur_equipe(monstre, equipe)
+
     return False, monstre
