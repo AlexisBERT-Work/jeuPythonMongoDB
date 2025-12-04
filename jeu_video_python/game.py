@@ -1,15 +1,14 @@
 import time
 from typing import List
 from models import Personnage 
-from utils import equipe_est_vivante, reset_vies_equipe, realiser_vague, monstre_aleatoire, afficher_monstre 
+from utils import equipe_est_vivante, reset_vies_equipe, realiser_vague, monstre_aleatoire, afficher_monstre, enregistrer_score
 
 
-def lancer_combat(db, equipe: List[Personnage]) -> bool:
+def lancer_combat(db, equipe: List[Personnage], pseudo: str) -> bool:
     """Lance les vagues de combat contre des monstres aléatoires."""
-    
     reset_vies_equipe(equipe)
-    print("\n--- DÉBUT DE LA BATAILLE ---")
-
+    print(f"\n {pseudo}, le combat va commencer. Bonne chance !")
+    nom = pseudo
     vagues_vaincues = 0
 
     while equipe_est_vivante(equipe):
@@ -19,20 +18,21 @@ def lancer_combat(db, equipe: List[Personnage]) -> bool:
             break
 
         vagues_vaincues += 1
-        print(f"\n       VAGUE {vagues_vaincues} : ATTENTION !       ")
+        print(f"\n      VAGUE {vagues_vaincues} : ATTENTION !")
         afficher_monstre(monstre)
         time.sleep(3)
 
         combattre_vague(equipe, monstre)
 
         if not equipe_est_vivante(equipe):
-            print("\n*** DÉFAITE : Votre équipe a été anéantie. ***")
+            print("\n*** DÉFAITE : Votre équipe a été anéantie. ***/n")
             return False
         
         print(f"Vague {vagues_vaincues} vaincue !")
 
         if not demander_continuer():
             print(f"\nVous vous retirez. *** FIN DU COMBAT : {vagues_vaincues} vagues vaincues ! ***")
+            enregistrer_score(db, nom, vagues_vaincues)
             return True
 
     print(f"\n*** FIN DU COMBAT : {vagues_vaincues} vagues vaincues ! ***")

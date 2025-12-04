@@ -1,3 +1,4 @@
+import datetime
 from pymongo import MongoClient
 
 MONGO_URI = "mongodb://localhost:27017/"
@@ -5,18 +6,16 @@ DB_NAME = "Characters"
 CHAPITRE_SELECTION = "chapitres"
 FACTIONS_COLLECTION = "factions"
 MONSTRES_COLLECTION = "monstres" 
+SCORES_COLLECTION = "scores"
 CLIENT = MongoClient(MONGO_URI)
 DB = CLIENT[DB_NAME]
 
 
 def creation_db_et_collections(db):
     """Crée la BDD et les collections nécessaires."""
-    for col in [CHAPITRE_SELECTION, FACTIONS_COLLECTION, MONSTRES_COLLECTION]:
+    for col in [CHAPITRE_SELECTION, FACTIONS_COLLECTION, MONSTRES_COLLECTION, SCORES_COLLECTION]:
         if col not in db.list_collection_names():
-            db.create_collection(col)
-            print(f"Collection '{col}' créée.")
-        else:
-            print(f"Collection '{col}' déjà existante.")
+            db.create_collection(col)    
 
 
 def ajout_chapitres(db):
@@ -41,7 +40,6 @@ def ajout_chapitres(db):
         },
     ]
     db[CHAPITRE_SELECTION].insert_many(chapitres)
-    print("Chapitres insérés.")
 
 
 def ajout_factions(db):
@@ -56,7 +54,6 @@ def ajout_factions(db):
         {"Nom": "Space Marines"},
     ]
     db[FACTIONS_COLLECTION].insert_many(factions)
-    print("Factions insérées.")
 
 def donnees_monstres():
     """Dictionnaire contenant les données des monstres."""
@@ -133,9 +130,6 @@ def ajout_monstres(db):
 
     if monstres_a_ajouter:
         db[MONSTRES_COLLECTION].insert_many(monstres_a_ajouter)
-        print(f"{len(monstres_a_ajouter)} monstres et unités insérés.")
-    else:
-        print("Aucun monstre n'a été ajouté.")
 
 
 if __name__ == "__main__":
@@ -144,6 +138,7 @@ if __name__ == "__main__":
         ajout_chapitres(DB)
         ajout_factions(DB)
         ajout_monstres(DB)
+        print("Base de données initialisée avec succès.")
     except Exception as e:
         print(f"Une erreur est survenue : {e}")
     finally:

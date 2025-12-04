@@ -1,3 +1,4 @@
+from datetime import datetime
 from pymongo import MongoClient
 from typing import List, Tuple, Optional
 import random
@@ -151,3 +152,24 @@ def realiser_vague(equipe: List[Personnage], monstre: Monstre) -> Tuple[bool, Mo
         attaque_monstre_sur_equipe(monstre, equipe)
 
     return False, monstre
+
+def enregistrer_score(db, player_name: str, score: int, collection_name: str = "scores") -> None:
+    """Enregistre ou met à jour le score. """
+    coll = db[collection_name]
+    score_existant = coll.find_one({"nom": player_name})
+    score_int = int(score)
+
+    if score_existant:
+        ancien_score = score_existant.get("score", 0)
+        if score_int > ancien_score:
+            coll.update_one(
+                {"nom": player_name},
+                {"$set": {"score": score_int, "date": datetime.utcnow()}}
+            )
+            
+    else:
+        coll.insert_one({
+            "nom": player_name,
+            "score": score_int,
+            "date": datetime.utcnow()
+        })
